@@ -14,13 +14,18 @@ using Microsoft.VisualBasic;
 
 
 
+
 namespace VideoCutter
+
+     
 {
     public partial class VideoCutter : Form
     {
         string output;
         private  Process proc = new Process();
         public double Progress { get; set; }
+
+
 
 
 
@@ -65,7 +70,7 @@ namespace VideoCutter
                 textBox1.Text = input;
                 string temp=Path.GetTempFileName();
                 //temp = input;
-                output = System.IO.Path.Combine(Application.StartupPath + "/saveVideo/" + temp);
+                output = Path.Combine("C:/saveVideo/", $"{Path.GetFileNameWithoutExtension(temp)}.mp4");
                 axWindowsMediaPlayer1.URL = textBox1.Text;
                 axWindowsMediaPlayer1.Ctlcontrols.play();
             }
@@ -75,6 +80,8 @@ namespace VideoCutter
         private void button2_Click(object sender, EventArgs e)
         {
             textBox2.Text = axWindowsMediaPlayer1.Ctlcontrols.currentPositionString;
+
+
         }
 
         private void button3_Click(object sender, EventArgs e)
@@ -117,9 +124,17 @@ namespace VideoCutter
         {
             Process proc = new Process();
             Control.CheckForIllegalCrossThreadCalls = false;
-            string cmd = "-i " + "\"" + textBox1.Text + "\"" + " -ss " + "\"" + textBox2.Text + "\"" + "-to" + "\"" + textBox3.Text + "\"" + " -c:v copy -c:a copy " + "\"" + output + "\"";
-           // string cmd = "-i \"" + textBox1.Text + "\" -ss \"" + textBox2.Text + "\" -to \"" + textBox3.Text + "\" -c:v copy -c:a copy \"" + output + "\"";
-            proc.StartInfo.FileName = Application.StartupPath + "/bin/ffmpeg.exe";
+
+
+            //string cmd = $"-i \"{textBox1.Text}\" -ss \"{textBox2.Text}\" -to \"{textBox3.Text}\" -c:v copy -c:a copy \"{output}\"";
+            string cmd = $"-i \"{textBox1.Text}\" -ss \"{textBox2.Text}\" -to \"{textBox3.Text}\" -vf \"eq=brightness=0.5\"  \"{output}\"";
+          //  string cmd = $"-i \"{textBox1.Text}\" -ss \"{textBox2.Text}\" -to \"{textBox3.Text}\" \"{output}\""; //-c:v copy -c:a copy
+
+
+            // string cmd = "-i \"" + textBox1.Text + "\" -ss \"" + textBox2.Text + "\" -to \"" + textBox3.Text + "\" -c:v copy -c:a copy \"" + output + "\"";
+            Console.WriteLine(cmd);
+            proc.StartInfo.FileName = @"C:\ffmpeg\ffmpeg.exe";
+            Console.WriteLine(proc.StartInfo.FileName);
             proc.StartInfo.Arguments = cmd;
             proc.StartInfo.UseShellExecute = false;
             proc.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
@@ -158,10 +173,11 @@ namespace VideoCutter
                 
                 }
             }
-            catch
+            catch (Exception ex)
             {
-
-
+                // Handle the exception and display or log the error message
+                MessageBox.Show("An error occurred: " + ex.Message);
+                Console.WriteLine(ex.Message);
             }
 
         }
@@ -193,5 +209,7 @@ namespace VideoCutter
         {
             backgroundWorker1.WorkerReportsProgress = true;
         }
+
+        
     }
 }
